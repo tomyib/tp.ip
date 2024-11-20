@@ -37,7 +37,6 @@ def search(request):
     else:  
         return redirect('home')
 
-
 # Estas funciones se usan cuando el usuario está logueado en la aplicación.
 @login_required
 def getAllFavouritesByUser(request):
@@ -54,4 +53,5 @@ def deleteFavourite(request):
 
 @login_required
 def exit(request):
-    pass
+    logout(request)
+    return redirect("home")
