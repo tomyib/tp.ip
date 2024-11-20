@@ -1,16 +1,25 @@
 # capa de servicio/lógica de negocio
-
+from ..transport.transport import getAllImages as fetchAllImages
 from ..persistence import repositories
 from ..utilities import translator
 from django.contrib.auth import get_user
 
 def getAllImages(input=None):
     # obtiene un listado de datos "crudos" desde la API, usando a transport.py.
-    json_collection = []
+    json_collection = fetchAllImages(input)
+
 
     # recorre cada dato crudo de la colección anterior, lo convierte en una Card y lo agrega a images.
     images = []
-
+    for item in json_collection:
+        if 'image' in item:  
+            images.append({
+                'url': item['image'],  
+                'name': item['name'],  
+                'status': item['status'],  
+                'last_location': item['location']['name'],  
+                'first_seen': item['episode'][0]  
+            })
     return images
 
 # añadir favoritos (usado desde el template 'home.html')
