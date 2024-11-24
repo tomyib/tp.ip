@@ -5,31 +5,23 @@
     <div class="d-flex justify-content-end" style="margin-bottom: 1%; margin-right: 2rem;">
         <!-- Selector de página -->
         <nav aria-label="...">
-            <ul class="pagination">
-                <li class="page-item disabled">
-                    <a class="page-link">⬅️</a>
-                </li>
-                <li class="page-item active" aria-current="page">
-                    <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">➡️</a>
-                </li>
-            </ul>
+            <div class="pagination">
+                {% if current_page > 1 %}
+                    <a class="page-link" href="?query={{ search_msg }}&page={{ current_page|add:"-1" }}">⬅️ Anterior</a>
+                {% endif %}
+                <span>Página {{ current_page }}</span>
+                <a class="page-link" href="?query={{ search_msg }}&page={{ current_page|add:"1" }}">Siguiente ➡️</a>
+            </div>                       
         </nav>
     </div>
 
     <div class="d-flex justify-content-center" style="margin-bottom: 1%">
         <!-- Buscador del sitio -->
-        <form class="d-flex" action="{% url 'buscar' %}" method="POST">
+        <form class="d-flex" action="{% url 'buscar' %}" method="GET">
             {% csrf_token %}
-            <input class="form-control me-2" type="search" name="query" placeholder="Escribí una palabra" aria-label="Search">
+            <input class="form-control me-2" type="search" name="query" placeholder="Escribí una palabra" value="{{ search_msg }}" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">Buscar</button>
-        </form>
+        </form>        
     </div>
 
     <div class="row row-cols-1 row-cols-md-3 g-4">

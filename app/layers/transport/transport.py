@@ -3,30 +3,25 @@
 import requests
 from ...config import config
 
-# comunicación con la REST API.
-# este método se encarga de "pegarle" a la API y traer una lista de objetos JSON crudos (raw).
-def getAllImages(input=None):
-    if input is None:
-        json_response = requests.get(config.DEFAULT_REST_API_URL).json()
-    else:
-        json_response = requests.get(config.DEFAULT_REST_API_SEARCH + input).json()
+def getAllImages(input=None, page=1):
+    try:
+        # URL según búsqueda o listado general
+        if input is None:
+            url = f"https://rickandmortyapi.com/api/character?page={page}"
+        else:
+            url = f"https://rickandmortyapi.com/api/character?name={input}&page={page}"
 
-    json_collection = []
+        print(f"[DEBUG] URL solicitada: {url}")
+        response = requests.get(url)
+        response.raise_for_status()  # Validar errores HTTP
+        json_response = response.json()
 
-    # si la búsqueda no arroja resultados, entonces retornamos una lista vacía de elementos.
-    if 'error' in json_response:
-        print("[transport.py]: la búsqueda no arrojó resultados.")
-        return json_collection
+        if 'error' in json_response:
+            print(f"[DEBUG] Error en la búsqueda: {json_response['error']}")
+            return []
 
-    for object in json_response['results']:
-        try:
-            if 'image' in object:  # verificar si la clave 'image' está presente en el objeto (sin 'image' NO nos sirve, ya que no mostrará las imágenes).
-                json_collection.append(object)
-            else:
-                print("[transport.py]: se encontró un objeto sin clave 'image', omitiendo...")
+        return json_response.get('results', [])
 
-        except KeyError: 
-            # puede ocurrir que no todos los objetos tenga la info. completa, en ese caso descartamos dicho objeto y seguimos con el siguiente en la próxima iteración.
-            pass
-
-    return json_collection
+    except requests.exceptions.RequestException as e:
+        print(f"[transport.py]: Error al obtener datos de la API: {e}")
+        return []
