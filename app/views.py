@@ -5,6 +5,8 @@ from django.shortcuts import redirect, render
 from .layers.services import services
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from .forms import customUserCreationForms
+from django.contrib.auth import authenticate, login
 
 def index_page(request):
     return render(request, 'index.html')
@@ -42,6 +44,31 @@ def search(request):
         })
     else:
         return redirect('home')
+    
+def registro(request):
+    data = {
+        'form': customUserCreationForms()
+    }
+
+    if request.method == 'POST':
+        formulario = customUserCreationForms(data=request.POST)
+        if formulario.is_valid():
+            # Guardo el usuario
+            formulario.save()
+
+            # Autentico al usuario
+            user = authenticate(
+                username=formulario.cleaned_data["username"],
+                password=formulario.cleaned_data["password1"]
+            )
+            if user is not None:
+                login(request, user)
+                return redirect(to="home")
+        
+        data['form'] = formulario
+
+    return render(request, 'registration/registro.html', data)
+
 
 
 

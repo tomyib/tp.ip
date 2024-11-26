@@ -26,6 +26,9 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{% url 'home' %}"><strong>Galería</strong></a>
                     </li>
+                    {% if not request.user.is_authenticated %}
+                        <a class="nav-link" href="{% url 'registro' %}">Registrarse</a>
+                    {% endif %}
                     {% if request.user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'favoritos' %}">Favoritos</a>
